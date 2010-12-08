@@ -1,0 +1,216 @@
+\documentclass[10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{parskip}
+
+\newcommand{\usage}[1]{\textbf{Utilisation: }\emph{#1}}
+
+\begin{document}
+
+\title{Rapport - Devoir 3}
+\date{Décembre 2010}
+\author{Vincent Foley-Bourgon (FOLV08078309) \and
+    Eric Thivierge (THIE09016601)}
+
+\maketitle
+
+\section{$N$-Dames}
+
+\subsection{Fonctionnement général}
+
+Afin de vérifier (ou rechercher) une solution au problème des
+$N$-Dames, la première étape consiste à construire une matrice
+d'attaque $M$ \footnote{Une matrice est une liste des listes.}. Cette
+matrice de $N \times N$ contient dans ses cellules la valeur $t$
+(vrai) si une case est attaquée par une dame et $f$ (faux) si une case
+est sécuritaire; initialement, $M$ ne contient que des $f$.
+
+Des dames sont placées ligne par ligne; si on tente de placer une dame
+sur une case $f$ de la matrice, cette position est valide et on passe
+à la ligne suivante. Si on tente de placer une dame sur une case $t$
+de la matrice, cette position est invalide, et le programme effectue
+un retour-arrière et tentera une position différente.
+
+Voici un exemple de la matrice $M$ si on place une dame à la position
+$(1,2)$ (première ligne, deuxième colonne):
+
+\[
+\begin{bmatrix}
+  \textbf{t} & \textbf{t} & \textbf{t} & \textbf{t} \\
+  \textbf{t} & \textbf{t} & \textbf{t} & f \\
+  f & \textbf{t} & f & \textbf{t} \\
+  f & \textbf{t} & f & f
+  \end{bmatrix}
+\]
+
+Si le programme réussit à placer $N$ dames sur chacune des lignes sans
+qu'aucune dame soit attaquée par une autre dame, on a un placement
+valide.
+
+\subsection{Relations}
+
+\subsubsection{repeter}
+
+\usage{repeter(N, E, L)}
+
+Cette relation mettra $N$ fois l'élément $E$ dans la liste $L$. Par
+exemple, \emph{repeter(4, x, L) = [x, x, x, x]}. \emph{repeter} est
+une relation récursive: répéter 0 fois donne la liste vide, sinon on
+``cons'' (pour utiliser la terminologie de Scheme) $E$ au résultat de
+répéter $N-1$ fois l'élément $E$.
+
+\subsubsection{matrice}
+
+\usage{matrice(N, E, Mat)}
+
+Cette relation crée une matrice $N \times N$ où tous les éléments sont
+initialisés à $E$. Cette relation est utilisée au début du programme
+pour créer la matrice d'attaque initiale. Cette relation utilise la
+relation \emph{repeter} en créant une liste de $N$ éléments et en
+répétant cette liste $N$ fois.
+
+\subsubsection{changerCol}
+
+\usage{changerCol(I, E, L, L2)}
+
+Cette relation change le $I$ème élément de $L$ par $E$ donnant la
+nouvelle liste $L2$. Cette relation est récursive; si $I \ne 1$, on
+``cons'' l'élément actuel au résultat de changer la colonne $I-1$ du
+reste de la liste.
+
+
+\subsubsection{changerCell}
+
+\usage{changerCell(I, J, E, M, M2)}
+
+Cette relation change l'élément en position $(I, J)$ de la matrice $M$
+par $E$ donnant la nouvelle matrice $M2$. Cette relation est
+récursive; si $I \ne 1$, on passe à la ligne suivante. Une fois
+arrivé à la bonne ligne, on modifie l'élément à la colonne $J$ par
+$E$.
+
+
+\subsubsection{occuperCol}
+
+\usage{occuperCol(Y, M, M2)}
+
+Étant donné une matrice $M$, \emph{occuperCol} donne une nouvelle
+matrice $M2$ où la colonne $Y$ a été mise à $t$ pour indiquer que la
+dame attaque cette colonne. Cette relation utilise la relation
+\emph{changerCol} afin de changer chaque ligne.
+
+
+\subsubsection{occuperLig}
+
+\usage{occuperLig(X, N, M, M2)}
+
+Étant donnée une matrice $M$ (et sa dimension $N$), \emph{occuperLig}
+donne une nouvelle matrice $M2$ où la ligne $X$ a été mise à $t$ pour
+indiquer que la dame attaque cette ligne. Cette relation utilise la
+relation \emph{repeter} qui donnera une nouvelle ligne de $N$ $t$.
+
+
+\subsubsection{occuperDiagDroite}
+
+\usage{occuperDiagDroite(X, Y, N, M, M2)}
+
+Étant donné une matrice $M$, une position $(X,Y)$ et la dimension $N$,
+\emph{occuperDiagDroite} produit la matrice $M2$ où les éléments sur
+la diagonale de $(X,Y)$ sont mis à $t$ pour indiquer que la dame
+attaque cette diagonale. Cette relation utilise \emph{changerCell}
+récursivement pour modifier chaque élément de la diagonale. La
+récursivité s'arrête lorsque $X$ ou $Y$ atteint la ligne ou colonne
+$N$.
+
+Si $(X,Y)$ se trouve sur la diagonale principale, les deux conditions
+d'arrêt sont atteintes en même temps et Prolog produira deux réponses.
+Ceci aurait pu être évité si l'utilisation de l'opérateur \emph{cut}
+avait été permise.
+
+
+\subsubsection{occuperDiagGauche}
+
+\usage{occuperDiagGauche(X, Y, N, M, M2)}
+
+Étant donné une matrice $M$, une position $(X,Y)$ et la dimension $N$,
+\emph{occuperDiagGauche} produit la matrice $M2$ où les éléments sur
+la diagonale de $(X,Y)$ sont mis à $t$ pour indiquer que la dame
+attaque cette diagonale. Cette relation utilise \emph{changerCell}
+récursivement pour modifier chaque élément de la diagonale. La
+récursivité s'arrête lorsque $X$ ou $Y$ atteint la ligne $N$ ou
+colonne 1.
+
+
+Si $(X,Y)$ se trouve sur la diagonale secondaire, les deux conditions
+d'arrêt sont atteintes en même temps et Prolog produira deux réponses.
+
+\subsubsection{occuper}
+
+\usage{occuper(N, X, Y, M, M2)}
+
+Cette relation fait appel à \emph{occuperCol}, \emph{occuperLig},
+\emph{occuperDiagDroite} et \emph{occuperDiagGauche} pour marquer dans
+$M2$ toutes les positions attaquées dans $M$ si on place une dame en
+position $(X,Y)$.
+
+\subsubsection{nth}
+
+\usage{nth(I, L, T)}
+
+\emph{nth} unifie avec $T$ le $I$ème élément de la liste $L$.
+
+\subsubsection{estLibre}
+
+\usage{estLibre(M, X, Y)}
+
+\emph{estLibre} utilise \emph{nth} deux fois pour obtenir la valeur en
+position $(X, Y)$ de la matrice d'attaque $M$. Cette valeur est
+ensuite comparée avec $f$. Si l'élément est $f$, alors la case est
+libre et sécuritaire, sinon elle ne l'est pas.
+
+\subsubsection{placer}
+
+\usage{placer(X, L, N, M)}
+
+\emph{placer} tente de placer sur chaque ligne $X$ une dame dans une
+colonne $Y$ qui se trouvent dans la liste $L$. Si la case est libre
+(tel que déterminé par \emph{estLibre}), alors la case, sa colonne, sa
+ligne et ses diagonales sont marquées comme étant attaquées et on
+tente d'insérer la dame suivante sur la ligne suivante. Si toutes les
+dames ont pu être placées, on a un placement valide.
+
+
+\subsubsection{ndames}
+
+\usage{ndames(N, L)}
+
+Cette relation est le programme principal. Elle peut vérifier si une
+liste de positions est un placement valide des dames sur l'échiquier.
+Elle peut également générer les positions valides pour un échiquier de
+taille $N$.
+
+
+\section{Impressions de Prolog}
+
+Prolog est intéressant pour générer automatiquement des solutions que
+l'on devrait faire manuellement dans des langages impératifs ou
+fonctionnels (e.g.: accumuler dans une liste les positions valides
+pour le problèmes des $N$-dames).
+
+La restriction de n'utiliser aucune des fonctionnalités avancées
+(impures) de Prolog limite considérablement les avenues possibles pour
+résoudre les problèmes. Par exemple, plutôt que d'utiliser une
+matrice d'attaque, on aurait pu avoir une règle \emph{estSécuritaire}
+qui détermine si une case n'est attaquée par aucune dame. Comme il
+est trivial de déterminer si deux reines s'attaquent mutuellement, il
+serait trivial avec la négation de déterminer si deux reines ne
+s'attaquent pas. Mais comme la négation est interdite, cette avenue a
+été abandonnée.
+
+\end{document}
+
