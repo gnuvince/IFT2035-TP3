@@ -19,40 +19,167 @@
 
 \maketitle
 
-\section{$N$-Reines}
+\section{Informations générales}
+
+Notre programme a été testé sous l'environnement SWI-Prolog.
+
+\section{$N$-Dames}
 
 \subsection{Fonctionnement général}
 
-Pour un plateau de taille NxN, le programme \emph{nreines} utilise le fait qu'une solution à ce problème peut prendre la forme d'une permutation des éléments d'une liste [1..N]. Le programme prend l'approche générer-tester pour générer les permutations possibles et tester lesquelles sont une solution au problème des N reines.
+Pour un plateau de taille $N \times N$, le programme \emph{ndames}
+utilise le fait qu'une solution à ce problème peut prendre la forme
+d'une permutation des éléments d'une liste $[1..N]$. Le programme prend
+l'approche générer-tester pour générer les permutations possibles et
+tester lesquelles sont une solution au problème des $N$-dames.
 
-Le programme utilise la relation \emph{interval} pour générer la liste de base [1..N], la relation \emph{perm} pour générer les permutations possibles de la liste de base et la relation \emph{secure} pour tester si une permutation donnée est une solution au problème.
+Le programme utilise la relation \emph{interval} pour générer la liste
+de base $[1..N]$, la relation \emph{perm} pour générer les permutations
+possibles de la liste de base et la relation \emph{secure} pour tester
+si une permutation donnée est une solution au problème.
 
 \subsection{Description des relations utilisées}
 
 \subsubsection{interval}
 \usage{interval(L, U, R)}
 
-Cette relation construit récursivement la liste [L..U] en concatenant [L] et interval((L+1), U, R).
+Cette relation construit récursivement la liste $[L..U]$ en
+concaténant L et interval((L+1), U, R).
 
 \subsubsection{perm}
 \usage{perm([X$|$R], L)}
 
-Cette relation unifie \emph{L} à \emph{[X$|$R]} en utilisant le fait que \emph{L} est une permutation de \emph{R} à laquelle on ajoute \emph{X}.
+Cette relation unifie \emph{L} à \emph{[X$|$R]} en utilisant le fait
+que \emph{L} est une permutation de \emph{R} à laquelle on ajoute
+\emph{X}.
 
 \subsubsection{secure}
 \usage{secure(P1, P2, [R1, R2$|$Rs])}
 
-Cette relation vérifie récursivement si la permutation donnée est une solution au problème des N reines. La relation utilise la relation auxilliaire \emph{secureAux} pour vérifier que:
+Cette relation vérifie récursivement si la permutation donnée est une
+solution au problème des $N$-dames. La relation utilise la relation
+auxiliaire \emph{secureAux} pour vérifier que:
 \begin{itemize}
 \item les positions (P1, R1) et (P2, R2) ne s'attaquent pas
-\item récursivement, la position (P1, R1) n'attaque pas les éléments restant de la permutation (\emph{Rs}) et
-\item récursivement, la position (P2, R2) n'attaque pas les éléments restant de la permutation (\emph{Rs}).
+\item récursivement, la position (P1, R1) n'attaque pas les éléments
+  restant de la permutation (\emph{Rs}) et
+\item récursivement, la position (P2, R2) n'attaque pas les éléments
+  restant de la permutation (\emph{Rs}).
 \end{itemize}
 
 \subsubsection{secureAux}
 \usage{secureAux((X1, Y1), (X2, Y2))}
 
-Cette relation utilise le fait que deux positions s'attaquent si elles sont sur la même ligne, colonne ou diagonale. Pour vérifier si deux positions sont sur une même diagonale, la relation vérifie si la variation en x (\emph{dX}) et la variation en y (\emph{dY}) entre ces positions ne sont pas égales.
+Cette relation utilise le fait que deux positions s'attaquent si elles
+sont sur la même ligne, colonne ou diagonale. Pour vérifier si deux
+positions sont sur une même diagonale, la relation vérifie si la
+variation en x (\emph{dX}) et la variation en y (\emph{dY}) entre ces
+positions ne sont pas égales.
+
+
+
+\section{Labyrinthe}
+
+\subsection{Fonctionnement général}
+
+Étant donné un labyrinthe sans cycle $L$ de dimensions $M \times N$,
+la relation \emph{traverser} unifiera $C$ avec l'unique chemin allant
+de $[M-1, N-1]$ à $[0, 0]$.
+
+
+\subsection{Description des relations utilisées}
+
+\subsubsection{elem}
+
+\usage{elem(M, I, J, E)}
+
+Étant donné une matrice $M$ et des coordonnées $I$ et $J$, \emph{elem}
+unifie $E$ avec la valeur de $M_{ij}$.
+
+\subsubsection{dimensions}
+
+\usage{dimensions(Lab, [M, N])}
+
+Étant donné un labyrinthe, la relation \emph{dimensions} unifiera $M$
+avec le nombre de lignes horizontales et $N$ avec le nombre de
+colonnes verticales.
+
+
+\subsubsection{voisins}
+
+\usage{voisins(M, P1, P2)}
+
+la relation \emph{voisins} détermine si \emph{P1} et \emph{P2} sont
+voisins.  Les conditions pour êtres voisins sont les suivantes:
+\begin{itemize}
+\item Les deux cases doivent contenir la valeur $t$
+\item Les deux cases ont une distance verticale de 1 ou (exclusif) une
+  distance horizontale de 1.
+\end{itemize}
+
+
+\subsubsection{prodAux}
+
+\usage{prodAux(X, Ys, Zs)}
+
+Une relation auxiliaire utilisée par \emph{prodCartesien},
+\emph{prodAux} unifie dans \emph{Zs} le ``cons'' de \emph{X} avec tous
+les éléments de \emph{Ys}.
+
+Exemple: \texttt{prodAux(0, [0,1,2,3], R) -> R = [[0,0], [0,1], [0,2],
+    [0,3]]}
+
+\subsubsection{prodCartesien}
+
+\usage{prodCartesien(Xs, Ys, Zs)}
+
+\emph{prodCartesien} unifie \emph{Zs} avec le résultat d'appeller
+\emph{prodAux} pour tous les éléments de \emph{Xs} avec \emph{Ys},
+donnant ainsi le produit cartésien des deux listes.
+
+
+\subsubsection{chemintInt}
+
+\usage{chemintInt(L, NV, X, Y, C)}
+
+Étant donné un labyrinthe \emph{L}, une liste des cases non-visitées
+\emph{NV}, le point de départ \emph{X}, le point d'arrivée \emph{Y},
+\emph{chemintInt} unifie récursivement dans \emph{C} le chemin
+intermédiaire entre \emph{X} et \emph{Y}.
+
+À chaque itération, les cases visitées sont éliminées de \emph{LV}
+pour éviter de revenir sur nos pas.
+
+
+\subsubsection{traverser}
+
+\usage{traverser(Lab, Chemin)}
+
+Étant donné un labyrinthe \emph{Lab}, \emph{traverser} va utiliser les
+relations précédentes pour unifier \emph{Chemin} avec la liste de
+positions à suivre pour sortir du labyrinthe.
+
+
+\section{Impressions de Prolog}
+
+Prolog est intéressant pour générer automatiquement des solutions que
+l'on devrait faire manuellement dans des langages impératifs ou
+fonctionnels (e.g.: accumuler dans une liste les positions valides
+pour le problèmes des $N$-dames).  Ainsi, les solutions aux problèmes
+sont surprenamment courtes.
+
+Énoncer des relations entre les différents états de résolution d'un
+problème s'avère souvent plus difficile que d'écrire les étapes
+impératives requises.
+
+La restriction de n'utiliser aucune des fonctionnalités impures de
+Prolog a limité les avenues possibles pour résoudre les problèmes.
+Par exemple, énoncer une relation d'attaque dans le problèmes des
+$N$-dames est trivial, et on peut facilement définir une relation de
+sécurité en disant qu'une case est sécure si elle n'est \emph{pas}
+attaquée.  Hélas, comme l'utilisation de la négation n'était pas
+permise, il a fallu trouver une façon plus astucieuse d'exprimer la
+relation de sécurité.
 
 \end{document}
 

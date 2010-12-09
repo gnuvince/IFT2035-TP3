@@ -18,7 +18,7 @@ append( [X|R1], L, [X|R2] ) :-
 %% Extrait le Ie élément d'une liste (1 based).
 %% nth(1, [0,1,2,3], T) -> T = 0.
 nth(1, [T|_], T).
-nth(I, [_|R], T) :- add(I2, 1, I), nth(I2, R, T). 
+nth(I, [_|R], T) :- add(I2, 1, I), nth(I2, R, T).
 
 %% Relation d'insertion d'un élément dans une liste.
 insere(X, L1, L2) :-
@@ -34,11 +34,10 @@ perm([X|R], L) :-
 %% Relation de creation de liste de valeurs entre L et U.
 %% interval(0, 4, R) -> R = [0, 1, 2, 3, 4].
 interval(U, U, [U]).
-interval(L, U, R) :-
-    lesseq(L, U),
+interval(L, U, [L|R]) :-
+    less(L, U),
     add(L, 1, L1),
-    interval(L1, U, R1),
-    append([L], R1, R).
+    interval(L1, U, R).
 
 %% Relation de distance entre deux points en X1, X2.
 %% dX([1, _], [3, _], D) -> D = 2; dX([3, _], [1, _], D) -> D = 2
@@ -77,7 +76,7 @@ dimensions(Lab, [M, N]) :-
     longueur(Lig, Np),
     add(N, 1, Np).
 
-%% Détermine lesquels des 4 cases voisines sont libres et non déjà visitées. 
+%% Détermine lesquels des 4 cases voisines sont libres et non déjà visitées.
 voisins(M, [X1, Y1], [X1, Y2]) :-
     add(Y1, 1, Y2),
     elem(M, X1, Y2, t).
@@ -121,15 +120,15 @@ traverser(L, C) :-
     dimensions(L, [M, N]),
     interval(0, M, Is),
     interval(0, N, Js),
-    prodCartesien(Is, Js, NV),    % NV: Non Visitees 
+    prodCartesien(Is, Js, NV),    % NV: Non Visitees
     cheminInt(L, NV, [M, N], [0, 0], C).
 
 %%
-%% N Reines
+%% N Dames
 %%
 
 %% Recherche les solutions possibles pour un plateau NxN.
-nreines(N, S) :-
+ndames(N, S) :-
     interval(1, N, R),
     perm(R, S),
     secure(1, 2, S).
@@ -153,4 +152,4 @@ secureAux((X1, Y1), (X2, Y2)) :-
     noteq(Y1, Y2),
     dX([X1, Y1], [X2, Y2], DX),
     dY([X1, Y1], [X2, Y2], DY),
-    noteq(DX, DY).    
+    noteq(DX, DY).
