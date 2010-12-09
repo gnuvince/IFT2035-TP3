@@ -31,7 +31,7 @@ Pour un plateau de taille $N \times N$, le programme \emph{ndames}
 utilise le fait qu'une solution à ce problème peut prendre la forme
 d'une permutation des éléments d'une liste $[1..N]$. Le programme prend
 l'approche générer-tester pour générer les permutations possibles et
-tester lesquelles sont une solution au problème des $N$-dames.
+tester lesquelles sont des solutions au problème des $N$-dames.
 
 Le programme utilise la relation \emph{interval} pour générer la liste
 de base $[1..N]$, la relation \emph{perm} pour générer les permutations
@@ -147,7 +147,7 @@ donnant ainsi le produit cartésien des deux listes.
 \emph{chemintInt} unifie récursivement dans \emph{C} le chemin
 intermédiaire entre \emph{X} et \emph{Y}.
 
-À chaque itération, les cases visitées sont éliminées de \emph{LV}
+À chaque itération, les cases visitées sont éliminées de \emph{NV}
 pour éviter de revenir sur nos pas.
 
 
@@ -180,6 +180,8 @@ sécurité en disant qu'une case est sécure si elle n'est \emph{pas}
 attaquée.  Hélas, comme l'utilisation de la négation n'était pas
 permise, il a fallu trouver une façon plus astucieuse d'exprimer la
 relation de sécurité.
+
+Il est assez difficile de passer au paradigme de programmation logique. Une fois cette étape passée (minimalement) on peut voir que les problèmes que nous avions à résoudre ont une solution que l'on peut exprimer de façon concise et élégante en prolog. On peut également comprendre que prolog peut résoudre certains types de problèmes avec une grande éfficience.
 
 \end{document}
 
